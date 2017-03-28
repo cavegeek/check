@@ -3,7 +3,9 @@
 
 #include <cassert>
 #include <experimental/optional>
+#include <experimental/tuple>
 #include <functional>
+#include <iostream>
 #include <tuple>
 #include <type_traits>
 
@@ -35,6 +37,24 @@ template <typename... args>
 inline std::experimental::optional<std::tuple<args...>>
     check(bool (&func)(args...)) {
   return check(std::function<bool(args...)>(func));
+}
+
+inline void print_args() {}
+
+template <typename arg, typename... args>
+inline void print_args(arg const & val, args const &... vals) {
+  std::cerr << val << "\n";
+  print_args(vals...);
+}
+
+template <typename... args> inline void test(bool (&func)(args...)) {
+  auto result(check(func));
+  if(result) {
+    std::cerr << "FAILURE\n";
+    std::experimental::apply(print_args<args...>, *result);
+  } else {
+    std::cerr << "SUCCESS\n";
+  }
 }
 
 #endif

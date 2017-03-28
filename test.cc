@@ -1,13 +1,14 @@
 #include <iostream>
+#include <tuple>
 
 #include "check.hh"
 
-bool f(unsigned u, int const & i) {
-  std::cout << u << ", " << i << std::endl;
-  return true;
-}
+bool f(unsigned u, int const & i) { return true; }
+
+bool g(unsigned u) { return u + u >= u; }
 
 int main() {
-  check(f);
+  test(f);
+  test(g);
   return 0;
 };
