@@ -5,6 +5,7 @@
 
 template <typename V> extern std::vector<V> const special;
 
+template <> extern std::vector<bool> const special<bool>;
 template <> extern std::vector<unsigned> const special<unsigned>;
 template <> extern std::vector<int> const special<int>;
 template <> extern std::vector<float> const special<float>;

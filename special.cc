@@ -2,6 +2,8 @@
 
 #include <limits>
 
+template <> std::vector<bool> const special<bool>{{false, true}};
+
 template <>
 std::vector<unsigned> const special<unsigned>{
     {0u, std::numeric_limits<unsigned>::max()}};
