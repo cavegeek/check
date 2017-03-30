@@ -13,11 +13,30 @@ bool j(double f) { return f < 0.f || f + f >= f; }
 
 bool k(bool x, bool y) { return x != y; }
 
+struct Point {
+  int x;
+  int y;
+};
+
+template <>
+std::vector<Point> special<Point>{special_construct<Point, int, int>()};
+
+Point rotate(Point p) { return {-p.y, p.x}; }
+
+bool operator==(Point const & p0, Point const & p1) { return p0.x == p1.x && p0.y == p1.y; }
+
+std::ostream & operator<<(std::ostream & o, Point const & p) {
+  return o << "{" << p.x << "," << p.y << "}";
+}
+
+bool m(Point p) { return rotate(rotate(rotate(rotate(p)))) == p; }
+
 int main() {
   test(f);
   test(g);
   test(h);
   test(j);
   test(k);
+  test(m);
   return 0;
 };
