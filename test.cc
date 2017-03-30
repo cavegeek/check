@@ -1,5 +1,4 @@
 #include <iostream>
-#include <tuple>
 
 #include "check.hh"
 
@@ -23,7 +22,9 @@ std::vector<Point> special<Point>{special_construct<Point, int, int>()};
 
 Point rotate(Point p) { return {-p.y, p.x}; }
 
-bool operator==(Point const & p0, Point const & p1) { return p0.x == p1.x && p0.y == p1.y; }
+bool operator==(Point const & p0, Point const & p1) {
+  return p0.x == p1.x && p0.y == p1.y;
+}
 
 std::ostream & operator<<(std::ostream & o, Point const & p) {
   return o << "{" << p.x << "," << p.y << "}";
@@ -32,6 +33,7 @@ std::ostream & operator<<(std::ostream & o, Point const & p) {
 bool m(Point p) { return rotate(rotate(rotate(rotate(p)))) == p; }
 
 int main() {
+  test(* + [](bool b) { return b || !b; });
   test(f);
   test(g);
   test(h);
