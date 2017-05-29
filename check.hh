@@ -56,6 +56,31 @@ template <typename... givens> struct given {
     }
     return {};
   }
+
+  static inline std::experimental::optional<std::tuple<givens...>> check_large(
+      std::default_random_engine &,
+      bool (&func)(givens...),
+      givens const &... gvals) {
+    return func(gvals...) ? std::experimental::optional<std::tuple<givens...>>{}
+                          : std::tuple<givens...>{gvals...};
+  }
+
+  template <typename arg, typename... args>
+  static inline std::experimental::optional<std::tuple<givens..., arg, args...>>
+      check_large(
+          std::default_random_engine & gen,
+          bool (&func)(givens..., arg, args...),
+          givens const &... gvals) {
+    using dec_arg = typename std::decay<arg>::type;
+    for(unsigned i = 0; i < 20; ++i) {
+      auto result(given<givens..., arg>::check_large(
+          gen, func, gvals..., generate_large<dec_arg>(gen)));
+      if(result) {
+        return result;
+      }
+    }
+    return {};
+  }
 };
 
 inline void print_args() {}
@@ -78,7 +103,13 @@ template <typename... args> inline void test(bool (&func)(args...)) {
       std::cerr << "FAILURE\n";
       std::experimental::apply(print_args<args...>, *result_small);
     } else {
-      std::cerr << "SUCCESS\n";
+      auto result_large(given<>::check_large(gen, func));
+      if(result_large) {
+        std::cerr << "FAILURE\n";
+        std::experimental::apply(print_args<args...>, *result_large);
+      } else {
+        std::cerr << "SUCCESS\n";
+      }
     }
   }
 }
