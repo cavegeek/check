@@ -41,7 +41,7 @@ std::ostream & operator<<(std::ostream & o, Point const & p) {
 bool m(Point p) { return rotate(rotate(rotate(rotate(p)))) == p; }
 
 int main() {
-  test(* + [](bool b) { return b || !b; });
+  test(*+[](bool b) { return b || !b; });
   test(f);
   test(g);
   test(h);
