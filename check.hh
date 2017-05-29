@@ -74,7 +74,7 @@ template <typename... args> inline void test(bool (&func)(args...)) {
   } else {
     std::default_random_engine gen{};
     auto result_small(given<>::check_small(gen, func));
-    if(result) {
+    if(result_small) {
       std::cerr << "FAILURE\n";
       std::experimental::apply(print_args<args...>, *result_small);
     } else {

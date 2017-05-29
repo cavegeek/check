@@ -48,5 +48,7 @@ int main() {
   test(j);
   test(k);
   test(m);
+  test(*+[](unsigned x, unsigned y) { return x + y < 4 || x + y > 100; });
+  test(*+[](unsigned x, unsigned y) { return x + y < 200 || x + y > 10000; });
   return 0;
 };
