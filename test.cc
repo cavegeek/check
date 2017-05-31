@@ -20,12 +20,9 @@ struct Point {
 template <>
 std::vector<Point> special<Point>{special_construct<Point, int, int>()};
 
-template <> Point generate_small<Point>(std::default_random_engine & gen) {
-  return Point{generate_small<int>(gen), generate_small<int>(gen)};
-}
-
-template <> Point generate_large<Point>(std::default_random_engine & gen) {
-  return Point{generate_large<int>(gen), generate_large<int>(gen)};
+template <>
+Point generate<Point>(std::default_random_engine & gen, short size) {
+  return Point{generate<int>(gen, size), generate<int>(gen, size)};
 }
 
 Point rotate(Point p) { return {-p.y, p.x}; }

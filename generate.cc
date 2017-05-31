@@ -3,51 +3,42 @@
 #include <limits>
 #include <random>
 
-template <> bool generate_small<bool>(std::default_random_engine & rand) {
+namespace {
+  template <typename Num> struct Bound {
+    static Num min(short size) {
+      return (std::numeric_limits<Num>::lowest() / static_cast<Num>(100)) *
+          static_cast<Num>(size);
+    }
+    static Num max(short size) {
+      return (std::numeric_limits<Num>::max() / static_cast<Num>(100)) *
+          static_cast<Num>(size);
+    }
+  };
+}
+
+template <> bool generate<bool>(std::default_random_engine & rand, short) {
   return std::bernoulli_distribution{0.5}(rand);
 }
 
 template <>
-unsigned generate_small<unsigned>(std::default_random_engine & rand) {
-  return std::uniform_int_distribution<unsigned>{0, 10}(rand);
-}
-
-template <> int generate_small<int>(std::default_random_engine & rand) {
-  return std::uniform_int_distribution<int>{-10, 10}(rand);
-}
-
-template <> float generate_small<float>(std::default_random_engine & rand) {
-  return std::uniform_real_distribution<float>{-10.f, 10.f}(rand);
-}
-
-template <> double generate_small<double>(std::default_random_engine & rand) {
-  return std::uniform_real_distribution<double>{-10.f, 10.f}(rand);
-}
-
-template <> bool generate_large<bool>(std::default_random_engine & rand) {
-  return std::bernoulli_distribution{0.5}(rand);
-}
-
-template <>
-unsigned generate_large<unsigned>(std::default_random_engine & rand) {
+unsigned generate<unsigned>(std::default_random_engine & rand, short size) {
   return std::uniform_int_distribution<unsigned>{
-      0, std::numeric_limits<unsigned>::max()}(rand);
+      0, Bound<unsigned>::max(size)}(rand);
 }
 
-template <> int generate_large<int>(std::default_random_engine & rand) {
+template <> int generate<int>(std::default_random_engine & rand, short size) {
   return std::uniform_int_distribution<int>{
-      std::numeric_limits<int>::lowest(),
-      std::numeric_limits<int>::max()}(rand);
+      Bound<int>::min(size), Bound<int>::max(size)}(rand);
 }
 
-template <> float generate_large<float>(std::default_random_engine & rand) {
+template <>
+float generate<float>(std::default_random_engine & rand, short size) {
   return std::uniform_real_distribution<float>{
-      std::numeric_limits<float>::lowest(),
-      std::numeric_limits<float>::max()}(rand);
+      Bound<float>::min(size), Bound<float>::max(size)}(rand);
 }
 
-template <> double generate_large<double>(std::default_random_engine & rand) {
+template <>
+double generate<double>(std::default_random_engine & rand, short size) {
   return std::uniform_real_distribution<double>{
-      std::numeric_limits<double>::lowest(),
-      std::numeric_limits<double>::max()}(rand);
+      Bound<double>::min(size), Bound<double>::max(size)}(rand);
 }

@@ -32,7 +32,7 @@ template <typename... givens> struct given {
     return {};
   }
 
-  static std::experimental::optional<std::tuple<givens...>> check_small(
+  static std::experimental::optional<std::tuple<givens...>> check(
       std::default_random_engine &,
       bool (&func)(givens...),
       givens const &... gvals) {
@@ -41,40 +41,14 @@ template <typename... givens> struct given {
   }
 
   template <typename arg, typename... args>
-  static std::experimental::optional<std::tuple<givens..., arg, args...>>
-      check_small(
-          std::default_random_engine & gen,
-          bool (&func)(givens..., arg, args...),
-          givens const &... gvals) {
-    using dec_arg = typename std::decay<arg>::type;
-    for(unsigned i = 0; i < 20; ++i) {
-      auto result(given<givens..., arg>::check_small(
-          gen, func, gvals..., generate_small<dec_arg>(gen)));
-      if(result) {
-        return result;
-      }
-    }
-    return {};
-  }
-
-  static std::experimental::optional<std::tuple<givens...>> check_large(
-      std::default_random_engine &,
-      bool (&func)(givens...),
+  static std::experimental::optional<std::tuple<givens..., arg, args...>> check(
+      std::default_random_engine & gen,
+      bool (&func)(givens..., arg, args...),
       givens const &... gvals) {
-    return func(gvals...) ? std::experimental::optional<std::tuple<givens...>>{}
-                          : std::tuple<givens...>{gvals...};
-  }
-
-  template <typename arg, typename... args>
-  static std::experimental::optional<std::tuple<givens..., arg, args...>>
-      check_large(
-          std::default_random_engine & gen,
-          bool (&func)(givens..., arg, args...),
-          givens const &... gvals) {
     using dec_arg = typename std::decay<arg>::type;
-    for(unsigned i = 0; i < 20; ++i) {
-      auto result(given<givens..., arg>::check_large(
-          gen, func, gvals..., generate_large<dec_arg>(gen)));
+    for(short i = 0; i < 1000; ++i) {
+      auto result(given<givens..., arg>::check(
+          gen, func, gvals..., generate<dec_arg>(gen, i / 10)));
       if(result) {
         return result;
       }
@@ -83,33 +57,27 @@ template <typename... givens> struct given {
   }
 };
 
- void print_args() {}
+void print_args() {}
 
 template <typename arg, typename... args>
- void print_args(arg const & val, args const &... vals) {
+void print_args(arg const & val, args const &... vals) {
   std::cerr << val << "\n";
   print_args(vals...);
 }
 
-template <typename... args>  void test(bool (&func)(args...)) {
+template <typename... args> void test(bool (&func)(args...)) {
   auto result(given<>::check_special(func));
   if(result) {
     std::cerr << "FAILURE\n";
     std::experimental::apply(print_args<args...>, *result);
   } else {
     std::default_random_engine gen{};
-    auto result_small(given<>::check_small(gen, func));
+    auto result_small(given<>::check(gen, func));
     if(result_small) {
       std::cerr << "FAILURE\n";
       std::experimental::apply(print_args<args...>, *result_small);
     } else {
-      auto result_large(given<>::check_large(gen, func));
-      if(result_large) {
-        std::cerr << "FAILURE\n";
-        std::experimental::apply(print_args<args...>, *result_large);
-      } else {
-        std::cerr << "SUCCESS\n";
-      }
+      std::cerr << "SUCCESS\n";
     }
   }
 }
