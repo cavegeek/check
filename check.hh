@@ -44,7 +44,11 @@ template <typename... args>
 std::experimental::optional<std::tuple<args...>>
     test_all(std::default_random_engine & eng, bool (&func)(args...)) {
   for(short size = 0; size < 1000; ++size) {
-    auto result = test_at(eng, func, size / 10);
+    auto result = test_at(
+        eng,
+        func,
+        std::uniform_int_distribution<short>{
+            0, static_cast<short>(size / 10)}(eng));
     if(result) {
       return result;
     }
