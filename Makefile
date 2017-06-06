@@ -1,4 +1,4 @@
-SOURCES ::= test generate special
+SOURCES ::= test generate
 
 CC ::= clang++
 CXX ::= clang++

@@ -29,18 +29,55 @@ unsigned generate<unsigned>(std::default_random_engine & rand, short size) {
 }
 
 template <> int generate<int>(std::default_random_engine & rand, short size) {
-  int s = static_cast<int>(size);
-  return std::uniform_int_distribution<int>{-(s * s), s * s}(rand);
+  if(size > 0) {
+    int s = static_cast<int>(size);
+    return std::uniform_int_distribution<int>{-(s * s), s * s}(rand);
+  } else {
+    return random_of(
+        rand,
+        std::experimental::make_array(
+            0,
+            std::numeric_limits<int>::min(),
+            std::numeric_limits<int>::max()));
+  }
 }
 
 template <>
 float generate<float>(std::default_random_engine & rand, short size) {
-  float s = static_cast<float>(size);
-  return std::uniform_real_distribution<float>{-(s * s), s * s}(rand);
+  if(size > 0) {
+    float s = static_cast<float>(size);
+    return std::uniform_real_distribution<float>{-(s * s), s * s}(rand);
+  } else {
+    return random_of(
+        rand,
+        std::experimental::make_array(
+            0.f,
+            -0.f,
+            std::numeric_limits<float>::min(),
+            std::numeric_limits<float>::lowest(),
+            std::numeric_limits<float>::max(),
+            std::numeric_limits<float>::infinity(),
+            -std::numeric_limits<float>::infinity(),
+            std::numeric_limits<float>::quiet_NaN()));
+  }
 }
 
 template <>
 double generate<double>(std::default_random_engine & rand, short size) {
-  double s = static_cast<double>(size);
-  return std::uniform_real_distribution<double>{-(s * s), s * s}(rand);
+  if(size > 0) {
+    double s = static_cast<double>(size);
+    return std::uniform_real_distribution<double>{-(s * s), s * s}(rand);
+  } else {
+    return random_of(
+        rand,
+        std::experimental::make_array(
+            0.f,
+            -0.f,
+            std::numeric_limits<double>::min(),
+            std::numeric_limits<double>::lowest(),
+            std::numeric_limits<double>::max(),
+            std::numeric_limits<double>::infinity(),
+            -std::numeric_limits<double>::infinity(),
+            std::numeric_limits<double>::quiet_NaN()));
+  }
 }
