@@ -19,18 +19,7 @@ std::experimental::optional<std::tuple<args...>>
 }
 
 template <typename T> T gen(std::default_random_engine & eng, short size) {
-  if(size == 0) {
-    unsigned special_size =
-        static_cast<unsigned>(special<typename std::decay<T>::type>.size());
-    if(special_size == 0) {
-      return generate<typename std::decay<T>::type>(eng, 0);
-    }
-    unsigned index =
-        std::uniform_int_distribution<unsigned>{0, special_size - 1}(eng);
-    return special<typename std::decay<T>::type>[index];
-  } else {
-    return generate<typename std::decay<T>::type>(eng, size - 1);
-  }
+  return generate<typename std::decay<T>::type>(eng, size);
 }
 
 template <typename... args>

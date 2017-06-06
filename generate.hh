@@ -4,6 +4,7 @@
 #include <random>
 
 //! Generates a random example of type V of a given size (0 to 100).
+/** 0 generates a random important value, like NaN or 0. */
 template <typename V> V generate(std::default_random_engine &, short size);
 
 template <> bool generate<bool>(std::default_random_engine &, short size);

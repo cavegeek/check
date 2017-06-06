@@ -18,9 +18,6 @@ struct Point {
 };
 
 template <>
-std::vector<Point> special<Point>{special_construct<Point, int, int>()};
-
-template <>
 Point generate<Point>(std::default_random_engine & gen, short size) {
   return Point{generate<int>(gen, size), generate<int>(gen, size)};
 }
