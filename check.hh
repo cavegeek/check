@@ -17,15 +17,11 @@ std::experimental::optional<std::tuple<args...>>
                        : std::tuple<args...>{vals...};
 }
 
-template <typename T> T gen(std::default_random_engine & eng, short size) {
-  return generate<typename std::decay<T>::type>(eng, size);
-}
-
 template <typename... args>
 std::experimental::optional<std::tuple<args...>> test_at(
     std::default_random_engine & eng, bool (&func)(args...), short size) {
   return test_with<args...>(
-      func, gen<typename std::decay<args>::type>(eng, size)...);
+      func, generate<typename std::decay<args>::type>(eng, size)...);
 }
 
 template <typename... args>
