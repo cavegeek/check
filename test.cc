@@ -35,14 +35,19 @@ std::ostream & operator<<(std::ostream & o, Point const & p) {
 bool m(Point p) { return rotate(rotate(rotate(rotate(p)))) == p; }
 
 int main() {
-  test(*+[](bool b) { return b || !b; });
-  test(f);
-  test(g);
-  test(h);
-  test(j);
-  test(k);
-  test(m);
-  test(*+[](unsigned x, unsigned y) { return x + y < 4 || x + y > 100; });
-  test(*+[](unsigned x, unsigned y) { return x + y < 200 || x + y > 10000; });
+  Suite suite{};
+  test(suite, *+[](bool b) { return b || !b; });
+  test(suite, f);
+  test(suite, g);
+  test(suite, h);
+  test(suite, j);
+  test(suite, k);
+  test(suite, m);
+  test(
+      suite, *+[](unsigned x, unsigned y) { return x + y < 4 || x + y > 100; });
+  test(suite, *+[](unsigned x, unsigned y) {
+    return x + y < 200 || x + y > 10000;
+  });
+  std::cerr << suite << "\n";
   return 0;
 };

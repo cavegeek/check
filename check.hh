@@ -48,15 +48,26 @@ void print_args(arg const & val, args const &... vals) {
   print_args(vals...);
 }
 
-template <typename... args> void test(bool (&func)(args...)) {
+struct Suite {
+  unsigned passed{0};
+  unsigned failed{0};
+};
+
+template <typename... args> void test(Suite & suite, bool (&func)(args...)) {
   std::default_random_engine gen{};
   auto result(test_all(gen, func));
   if(result) {
+    ++suite.failed;
     std::cerr << "FAILURE\n";
     std::experimental::apply(print_args<args...>, *result);
   } else {
+    ++suite.passed;
     std::cerr << "SUCCESS\n";
   }
+}
+
+std::ostream & operator<<(std::ostream & o, Suite const & suite) {
+  return o << "Failed " << suite.failed << ", Passed " << suite.passed;
 }
 
 #endif
