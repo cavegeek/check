@@ -53,16 +53,16 @@ struct Suite {
   unsigned failed{0};
 };
 
-template <typename... args> void test(Suite & suite, bool (&func)(args...)) {
+template <typename... args> void test(
+    std::string const & name, Suite & suite, bool (&func)(args...)) {
   std::default_random_engine gen{};
   auto result(test_all(gen, func));
   if(result) {
     ++suite.failed;
-    std::cerr << "FAILURE\n";
+    std::cerr << "FAILURE: " << name << "\n";
     std::experimental::apply(print_args<args...>, *result);
   } else {
     ++suite.passed;
-    std::cerr << "SUCCESS\n";
   }
 }
 

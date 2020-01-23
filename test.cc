@@ -36,16 +36,16 @@ bool m(Point p) { return rotate(rotate(rotate(rotate(p)))) == p; }
 
 int main() {
   Suite suite{};
-  test(suite, *+[](bool b) { return b || !b; });
-  test(suite, f);
-  test(suite, g);
-  test(suite, h);
-  test(suite, j);
-  test(suite, k);
-  test(suite, m);
-  test(
+  test("bool", suite, *+[](bool b) { return b || !b; });
+  test("f", suite, f);
+  test("g", suite, g);
+  test("h", suite, h);
+  test("j", suite, j);
+  test("k", suite, k);
+  test("m", suite, m);
+  test("two unsigned",
       suite, *+[](unsigned x, unsigned y) { return x + y < 4 || x + y > 100; });
-  test(suite, *+[](unsigned x, unsigned y) {
+  test("two unsigned 2", suite, *+[](unsigned x, unsigned y) {
     return x + y < 200 || x + y > 10000;
   });
   std::cerr << suite << "\n";
