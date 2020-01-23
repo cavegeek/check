@@ -50,4 +50,4 @@ int main() {
   });
   std::cerr << suite << "\n";
   return 0;
-};
+}
