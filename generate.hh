@@ -21,20 +21,22 @@ template <> double generate<double>(std::default_random_engine &, short size);
 #include <random>
 
 // Can use make_array when we switch to c++20
-template<typename... Ts>
-std::array<std::common_type_t<Ts...>,sizeof...(Ts)> constexpr array_of(
-    Ts&&... ts) {
+template <typename... Ts>
+std::array<std::common_type_t<Ts...>, sizeof...(Ts)> constexpr array_of(
+    Ts &&... ts) {
   return {ts...};
 }
 
 template <typename T, size_t n>
-T random_of_array(std::default_random_engine & rand, std::array<T, n> const & vals) {
+T random_of_array(
+    std::default_random_engine & rand, std::array<T, n> const & vals) {
   static_assert(n > 0, "Cannot return random_of an empty array");
   return vals[std::uniform_int_distribution<size_t>{0, n - 1}(rand)];
 }
 
 template <typename T, typename... Ts>
-std::common_type_t<T, Ts...> random_of(std::default_random_engine & rand, T const & val, Ts const &... vals) {
+std::common_type_t<T, Ts...> random_of(
+    std::default_random_engine & rand, T const & val, Ts const &... vals) {
   return random_of_array(rand, array_of(val, vals...));
 }
 
@@ -48,8 +50,7 @@ unsigned generate<unsigned>(std::default_random_engine & rand, short size) {
     unsigned s = static_cast<unsigned>(size);
     return std::uniform_int_distribution<unsigned>{0, s * s}(rand);
   } else {
-    return random_of(
-        rand, 0u, std::numeric_limits<unsigned>::max());
+    return random_of(rand, 0u, std::numeric_limits<unsigned>::max());
   };
 }
 
