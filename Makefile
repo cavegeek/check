@@ -2,7 +2,7 @@
 
 SOURCES ::= test
 
-CXXFLAGS ::= -std=c++14 -Wall -pedantic -MMD -g
+CXXFLAGS ::= -std=c++17 -Wall -pedantic -MMD -g
 
 test: ${SOURCES:=.o}
 	$(CXX) -o $@ ${SOURCES:=.o}
