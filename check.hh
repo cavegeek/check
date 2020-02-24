@@ -54,7 +54,7 @@ struct Suite {
 
 template <typename... args>
 void test(std::string const & name, Suite & suite, bool (&func)(args...)) {
-  std::default_random_engine gen{};
+  std::default_random_engine gen{std::random_device{}()};
   auto result(test_all(gen, func));
   if(result) {
     ++suite.failed;
