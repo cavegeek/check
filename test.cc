@@ -2,52 +2,27 @@
 
 #include "check.hh"
 
-bool f(unsigned u, int const & i) { return true; }
-
-bool g(unsigned u) { return u + u >= u; }
-
-bool h(float f) { return f < 0.f || f + f >= f; }
-
-bool j(double f) { return f < 0.f || f + f >= f; }
-
-bool k(bool x, bool y) { return x != y; }
-
-struct Point {
-  int x;
-  int y;
-};
-
-template <>
-Point generate<Point>(std::default_random_engine & gen, short size) {
-  return Point{generate<int>(gen, size), generate<int>(gen, size)};
-}
-
-Point rotate(Point p) { return {-p.y, p.x}; }
-
-bool operator==(Point const & p0, Point const & p1) {
-  return p0.x == p1.x && p0.y == p1.y;
-}
-
-std::ostream & operator<<(std::ostream & o, Point const & p) {
-  return o << "{" << p.x << "," << p.y << "}";
-}
-
-bool m(Point p) { return rotate(rotate(rotate(rotate(p)))) == p; }
-
 int main() {
-  Suite suite{};
-  test("bool", suite, *+[](bool b) { return b || !b; });
-  test("f", suite, f);
-  test("g", suite, g);
-  test("h", suite, h);
-  test("j", suite, j);
-  test("k", suite, k);
-  test("m", suite, m);
-  test("two unsigned",
-      suite, *+[](unsigned x, unsigned y) { return x + y < 4 || x + y > 100; });
-  test("two unsigned 2", suite, *+[](unsigned x, unsigned y) {
-    return x + y < 200 || x + y > 10000;
+  Suite suite{"int properties"};
+  suite.test("commutative", *+[](std::ostream & log, Gen & gen) {
+    int x = gen;
+    return (2 * x) % 2 == 0;
   });
+  suite.test("neg", *+[](std::ostream & log, Gen & gen) {
+    int x = gen;
+    return x < 0 || -x > 0;
+  });
+  TEST(suite, "neg w macro",
+    GEN(int, x);
+    LOG(-x);
+    return x <= 0 || -x <= 0;
+  );
+  TEST(suite, "sub",
+    GEN(int, x);
+    GEN(int, y);
+    NAME(diff, x - y);
+    return diff < x;
+  );
   std::cerr << suite << "\n";
   return 0;
 }
