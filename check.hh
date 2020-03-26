@@ -60,11 +60,13 @@ void Suite::test(
     bool (&func)(std::ostream &, Gen &)) {
   std::ostringstream log;
   std::minstd_rand eng{std::random_device{}()};
-  log << name << std::endl;
   for(unsigned size = 0; size <= 100; ++size) {
     Gen gen{size, eng};
     for(unsigned i = 0; i < 10; ++i) {
+      log.str("");
+      log << name << std::endl;
       bool result = func(log, gen);
+      log.flush();
       if(!result) {
         std::cerr << "FAILED: " << log.str() << std::endl;
         ++failed;
