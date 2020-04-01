@@ -23,6 +23,22 @@ int main() {
     NAME(diff, x - y);
     return diff < x;
   );
+  TEST(suite, "sub long",
+    GEN(long, x);
+    GEN(long, y);
+    NAME(diff, x - y);
+    return diff < x;
+  );
   std::cerr << suite << "\n";
+
+  Suite fl{"float properties"};
+  TEST(fl, "commutative",
+    GEN(float, x);
+    GEN(float, y);
+    NAME(sum1, x + y);
+    NAME(sum2, y + x);
+    return sum1 == sum2;
+  );
+  std::cerr << fl << "\n";
   return 0;
 }

@@ -39,16 +39,35 @@ template<typename R, typename T, size_t n> T random_of(R & eng, std::array<T, n>
   return vals[std::uniform_int_distribution<size_t>{0, n - 1}(eng)];
 }
 
-template<> Gen::operator int() {
-  if(size == 0) {
-    return random_of(engine, std::array<int, 3>{
-      0,
-      std::numeric_limits<int>::min(),
-      std::numeric_limits<int>::max()});
-  } else {
-    int max = (std::numeric_limits<int>::max() / 100) * static_cast<int>(size);
-    return std::uniform_int_distribution<int>{-max, max}(engine);
+template<typename T> Gen::operator T() {
+  if constexpr (std::is_integral_v<T>) {
+    if constexpr (std::is_signed_v<T>) {
+      if(size == 0) {
+        return random_of(engine, std::array{
+          T{0},
+          std::numeric_limits<T>::min(),
+          std::numeric_limits<T>::max()});
+      } else {
+        T max = (std::numeric_limits<T>::max() / 100) * static_cast<T>(size);
+        return std::uniform_int_distribution<T>{-max, max}(engine);
+      }
+    } else {
+      if(size == 0) {
+        return random_of(engine, std::array{
+          T{0},
+          std::numeric_limits<T>::max()});
+      } else {
+        T max = (std::numeric_limits<T>::max() / 100) * static_cast<T>(size);
+        return std::uniform_int_distribution<T>{-max, max}(engine);
+      }
+    }
+  } else if constexpr (std::is_floating_point_v<T>) {
+    return {};
   }
+}
+
+template<> Gen::operator bool() {
+  return std::bernoulli_distribution{0.5}(engine);
 }
 
 // testing
