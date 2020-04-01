@@ -8,8 +8,6 @@
 #include <tuple>
 #include <type_traits>
 
-#include "generate.hh"
-
 struct Gen {
   unsigned size;
   std::minstd_rand engine;
