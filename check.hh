@@ -1,11 +1,10 @@
 #ifndef CHECK_HH
 #define CHECK_HH
 
+#include <array>
 #include <iostream>
-#include <optional>
 #include <random>
 #include <sstream>
-#include <tuple>
 #include <type_traits>
 
 struct Gen {
