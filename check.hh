@@ -62,7 +62,20 @@ template<typename T> Gen::operator T() {
       }
     }
   } else if constexpr (std::is_floating_point_v<T>) {
-    return {};
+    if(size > 0) {
+      T s = static_cast<T>(size);
+      return std::uniform_real_distribution<T>{-(s * s), s * s}(engine);
+    } else {
+      return random_of(engine, std::array{
+          T{0},
+          -T{0},
+          std::numeric_limits<T>::min(),
+          std::numeric_limits<T>::lowest(),
+          std::numeric_limits<T>::max(),
+          std::numeric_limits<T>::infinity(),
+          -std::numeric_limits<T>::infinity(),
+          std::numeric_limits<T>::quiet_NaN()});
+    }
   }
 }
 

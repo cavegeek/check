@@ -2,6 +2,28 @@
 
 #include "check.hh"
 
+struct Point {
+  float x;
+  float y;
+};
+
+Point operator+(Point const & v, Point const & w) {
+  return Point{v.x + w.x, v.y + w.y};
+}
+
+bool operator==(Point const & v, Point const & w) {
+  return v.x == w.x && v.y == w.y;
+}
+
+template <> Gen::operator Point() {
+  return {*this, *this};
+}
+
+std::ostream & operator<<(std::ostream & o, Point const & p) {
+  o << "{" << p.x << ", " << p.y << "}";
+  return o;
+}
+
 int main() {
   Suite suite{"int properties"};
   suite.test("commutative", *+[](std::ostream & log, Gen & gen) {
@@ -40,5 +62,16 @@ int main() {
     return sum1 == sum2;
   );
   std::cerr << fl << "\n";
+
+  Suite user{"user defined type properties"};
+  TEST(user, "commutative Point",
+    GEN(Point, p);
+    GEN(Point, q);
+    NAME(sum1, p + q);
+    NAME(sum2, q + p);
+    return sum1 == sum2;
+  );
+  std::cerr << user << "\n";
+
   return 0;
 }
