@@ -105,13 +105,16 @@ int main() {
     NAME(sum2, q + p);
     return sum1 == sum2;
   );
-  TEST(user, "commutative TPoint<float>",
-    GEN(TPoint<float>, p);
-    GEN(TPoint<float>, q);
-    NAME(sum1, p + q);
-    NAME(sum2, q + p);
-    return sum1 == sum2;
-  );
+  // correctly fails to compile
+  /*
+    TEST(user, "commutative TPoint<float>",
+      GEN(TPoint<float>, p);
+      GEN(TPoint<float>, q);
+      NAME(sum1, p + q);
+      NAME(sum2, q + p);
+      return sum1 == sum2;
+    );
+  */
   std::cerr << user << "\n";
 
   return 0;
