@@ -33,11 +33,11 @@ std::ostream & operator<<(std::ostream & o, Suite const & suite) {
 
 // generation
 
-//TODO
-
 template<typename R, typename T, size_t n> T random_of(R & eng, std::array<T, n> const & vals) {
   return vals[std::uniform_int_distribution<size_t>{0, n - 1}(eng)];
 }
+
+template<typename T, typename = void> struct generate { static std::nullptr_t rand; };
 
 template<typename T> Gen::operator T() {
   if constexpr (std::is_integral_v<T>) {
@@ -76,6 +76,8 @@ template<typename T> Gen::operator T() {
           -std::numeric_limits<T>::infinity(),
           std::numeric_limits<T>::quiet_NaN()});
     }
+  } else if constexpr (std::is_invocable_r_v<T, decltype(generate<T>::rand), Gen &>) {
+    return generate<T>::rand(*this);
   }
 }
 

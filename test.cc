@@ -24,6 +24,33 @@ std::ostream & operator<<(std::ostream & o, Point const & p) {
   return o;
 }
 
+template<typename T>
+struct TPoint {
+  T x;
+  T y;
+};
+
+template<typename T>
+TPoint<T> operator+(TPoint<T> const & v, TPoint<T> const & w) {
+  return {v.x + w.x, v.y + w.y};
+}
+
+template<typename T>
+bool operator==(TPoint<T> const & v, TPoint<T> const & w) {
+  return v.x == w.x && v.y == w.y;
+}
+
+template<typename T>
+struct generate<TPoint<T>, typename std::enable_if_t<std::is_integral_v<T>>> {
+  static TPoint<T> rand(Gen & gen) { return {gen, gen}; }
+};
+
+template<typename T>
+std::ostream & operator<<(std::ostream & o, TPoint<T> const & p) {
+  o << "{" << p.x << ", " << p.y << "}";
+  return o;
+}
+
 int main() {
   Suite suite{"int properties"};
   suite.test("commutative", *+[](std::ostream & log, Gen & gen) {
@@ -67,6 +94,20 @@ int main() {
   TEST(user, "commutative Point",
     GEN(Point, p);
     GEN(Point, q);
+    NAME(sum1, p + q);
+    NAME(sum2, q + p);
+    return sum1 == sum2;
+  );
+  TEST(user, "commutative TPoint<int>",
+    GEN(TPoint<int>, p);
+    GEN(TPoint<int>, q);
+    NAME(sum1, p + q);
+    NAME(sum2, q + p);
+    return sum1 == sum2;
+  );
+  TEST(user, "commutative TPoint<float>",
+    GEN(TPoint<float>, p);
+    GEN(TPoint<float>, q);
     NAME(sum1, p + q);
     NAME(sum2, q + p);
     return sum1 == sum2;
