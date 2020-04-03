@@ -75,7 +75,11 @@ template<typename T> Gen::operator T() {
           -std::numeric_limits<T>::infinity(),
           std::numeric_limits<T>::quiet_NaN()});
     }
-  } else if constexpr (std::is_invocable_r_v<T, decltype(generate<T>::rand), Gen &>) {
+  } else {
+    static_assert(
+      std::is_invocable_r_v<T, decltype(generate<T>::rand), Gen &>,
+      "Cannot generate a value of this type. "
+      "Please specialize Gen::operator T() or struct generate.");
     return generate<T>::rand(*this);
   }
 }
