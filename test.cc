@@ -15,8 +15,8 @@ bool operator==(Point const & v, Point const & w) {
   return v.x == w.x && v.y == w.y;
 }
 
-template <> Gen::operator Point() {
-  return {*this, *this};
+template <> Random::operator Point() {
+  return {rand, rand};
 }
 
 std::ostream & operator<<(std::ostream & o, Point const & p) {
@@ -42,7 +42,7 @@ bool operator==(TPoint<T> const & v, TPoint<T> const & w) {
 
 template<typename T>
 struct generate<TPoint<T>, typename std::enable_if_t<std::is_integral_v<T>>> {
-  static TPoint<T> rand(Gen & gen) { return {gen, gen}; }
+  static TPoint<T> rand(Random & r) { return {r, r}; }
 };
 
 template<typename T>
@@ -53,12 +53,12 @@ std::ostream & operator<<(std::ostream & o, TPoint<T> const & p) {
 
 int main() {
   Suite suite{"int properties"};
-  suite.test("commutative", *+[](std::ostream & log, Gen & gen) {
-    int x = gen;
+  suite.test("commutative", *+[](std::ostream & log, Random & rand) {
+    int x = rand;
     return (2 * x) % 2 == 0;
   });
-  suite.test("neg", *+[](std::ostream & log, Gen & gen) {
-    int x = gen;
+  suite.test("neg", *+[](std::ostream & log, Random & rand) {
+    int x = rand;
     return x < 0 || -x > 0;
   });
   TEST(suite, "neg w macro",
