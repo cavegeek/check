@@ -72,6 +72,13 @@ int main() {
     NAME(diff, x - y);
     return diff < x;
   );
+#define ID(...) __VA_ARGS__
+  TEST(suite, "sub range",
+    GEN(ID(num_range<int, -4000, 4000>), x);
+    GEN(ID(num_range<int, 100, 2000>), y);
+    NAME(diff, x - y);
+    return diff < x;
+  );
   TEST(suite, "sub long",
     GEN(long, x);
     GEN(long, y);

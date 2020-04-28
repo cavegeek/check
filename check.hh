@@ -67,6 +67,33 @@ struct RandomImpl : Random {
   Engine & engine() { return engine_; }
 };
 
+template<typename T, T min_v, T max_v>
+struct num_range {
+  static_assert(
+    std::is_integral_v<T> || std::is_floating_point_v<T>,
+    "num_range must be used on an integral of floating point type");
+  explicit constexpr num_range(T const & v) : val(v) {}
+  T val;
+  operator T() const { return val; }
+  std::ostream operator<<(std::ostream & o) const { o << val; return o; }
+};
+
+template<typename T>
+struct num_range_generator {
+  static constexpr bool value = false;
+};
+
+template<typename T, T min_, T max_>
+struct num_range_generator<num_range<T, min_, max_>> {
+  static constexpr bool value = true;
+  static constexpr T min = min_;
+  static constexpr T max = max_;
+  static bool constexpr in_range(T const & val) {
+    return min <= val && max >= val;
+  }
+  using type = T;
+};
+
 template<typename T> Random::operator T() {
   if constexpr (std::is_integral_v<T>) {
     if constexpr (std::is_signed_v<T>) {
@@ -103,6 +130,47 @@ template<typename T> Random::operator T() {
           std::numeric_limits<T>::infinity(),
           -std::numeric_limits<T>::infinity(),
           std::numeric_limits<T>::quiet_NaN()});
+    }
+  } else if constexpr (num_range_generator<T>::value) {
+    using num = typename num_range_generator<T>::type;
+    if(size() > 0) {
+      if constexpr (std::is_floating_point_v<num>) {
+        num const s = static_cast<num>(size());
+        num const s_sq = s*s;
+        //TODO improve
+        num const min_s{max(num_range_generator<T>::min, -s_sq)};
+        num const max_s{min(num_range_generator<T>::max, s_sq)};
+        return T{std::uniform_real_distribution{min_s, max_s}(engine())};
+      } else {
+        num const min{num_range_generator<T>::min};
+        num const max{min + (num_range_generator<T>::max - min) / ((num)100 / static_cast<num>(size()))};
+        return T{std::uniform_int_distribution{min, max}(engine())};
+      }
+    } else {
+      if constexpr (std::is_floating_point_v<num>) {
+        if constexpr (num_range_generator<T>::in_range(0)) {
+          return random_of(std::array{
+            T{0},
+            -T{0},
+            T{num_range_generator<T>::min},
+            T{num_range_generator<T>::max}});
+        } else {
+          return random_of(std::array{
+            T{num_range_generator<T>::min},
+            T{num_range_generator<T>::max}});
+        }
+      } else {
+        if constexpr (num_range_generator<T>::in_range(0)) {
+          return random_of(std::array{
+            T{0},
+            T{num_range_generator<T>::min},
+            T{num_range_generator<T>::max}});
+        } else {
+          return random_of(std::array{
+            T{num_range_generator<T>::min},
+            T{num_range_generator<T>::max}});
+        }
+      }
     }
   } else {
     static_assert(
@@ -148,7 +216,7 @@ void Suite::test(
     (name), \
     *+[](std::ostream & log, Random & rand) { body })
 #define LOG(expr) log << #expr << " = " << (expr) << std::endl;
-#define GEN(typ, var) typ var = rand; LOG(var)
+#define GEN(typ, var) auto var = (typ)(rand); LOG(var)
 #define NAME(var, expr) auto var = expr; LOG(var)
 
 #endif
