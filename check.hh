@@ -2,6 +2,7 @@
 #define CHECK_HH
 
 #include <array>
+#include <cmath>
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -82,6 +83,12 @@ template<typename T>
 struct num_range_generator {
   static constexpr bool value = false;
 };
+
+template<typename T>
+using nice = num_range<
+  T,
+  std::is_unsigned_v<T> ? T{0} : -static_cast<T>(std::sqrt(std::numeric_limits<T>::max())),
+  static_cast<T>(std::sqrt(std::numeric_limits<T>::max()))>;
 
 template<typename T, T min_, T max_>
 struct num_range_generator<num_range<T, min_, max_>> {

@@ -85,6 +85,18 @@ int main() {
     NAME(diff, x - y);
     return diff < x;
   );
+  TEST(suite, "add bigger",
+    GEN(nice<unsigned>, x);
+    GEN(nice<unsigned>, y);
+    NAME(sum, x + y);
+    return sum >= x;
+  );
+  TEST(suite, "mul bigger",
+    GEN(nice<unsigned>, x);
+    GEN(nice<unsigned>, y);
+    NAME(prod, x * y);
+    return x == 0 || y == 0 || prod >= x;
+  );
   std::cerr << suite << "\n";
 
   Suite fl{"float properties"};
