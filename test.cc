@@ -2,6 +2,8 @@
 
 #include "check.hh"
 
+using namespace check;
+
 struct Point {
   float x;
   float y;
@@ -19,122 +21,28 @@ template <> Random::operator Point() {
   return {rand, rand};
 }
 
-std::ostream & operator<<(std::ostream & o, Point const & p) {
-  o << "{" << p.x << ", " << p.y << "}";
-  return o;
+std::string format(Point const & p) {
+  return "{" + format(p.x) + ", " + format(p.y) + "}";
 }
 
-template<typename T>
-struct TPoint {
-  T x;
-  T y;
+struct properties : Suite {
+  void test() override {
+    int x = rand;
+    int y = rand;
+    property("int commutative", x + y == y + x, output(x, y, x + y, y + x));
+    int z = rand;
+    property("int associative", x + (y + z) == (x + y) + z, output(x, y, z, y + z, x + (y + z), (x + y), (x + y) + z));
+    float v = rand;
+    float w = rand;
+    property("float commutative", v + w == w + v, output(v, w, v + w, w + v));
+    property("float sub", v - w == w - v, output(v, w, v - w, w - v));
+    Point p = rand;
+    Point q = rand;
+    property("Point commutative", p + q == q + p, output(p, q, p + q, q + p));
+  }
 };
-
-template<typename T>
-TPoint<T> operator+(TPoint<T> const & v, TPoint<T> const & w) {
-  return {v.x + w.x, v.y + w.y};
-}
-
-template<typename T>
-bool operator==(TPoint<T> const & v, TPoint<T> const & w) {
-  return v.x == w.x && v.y == w.y;
-}
-
-template<typename T>
-struct generate<TPoint<T>, typename std::enable_if_t<std::is_integral_v<T>>> {
-  static TPoint<T> rand(Random & r) { return {r, r}; }
-};
-
-template<typename T>
-std::ostream & operator<<(std::ostream & o, TPoint<T> const & p) {
-  o << "{" << p.x << ", " << p.y << "}";
-  return o;
-}
 
 int main() {
-  Suite suite{"int properties"};
-  suite.test("commutative", *+[](std::ostream & log, Random & rand) {
-    int x = rand;
-    return (2 * x) % 2 == 0;
-  });
-  suite.test("neg", *+[](std::ostream & log, Random & rand) {
-    int x = rand;
-    return x < 0 || -x > 0;
-  });
-  TEST(suite, "neg w macro",
-    GEN(int, x);
-    LOG(-x);
-    return x <= 0 || -x <= 0;
-  );
-  TEST(suite, "sub",
-    GEN(int, x);
-    GEN(int, y);
-    NAME(diff, x - y);
-    return diff < x;
-  );
-#define ID(...) __VA_ARGS__
-  TEST(suite, "sub range",
-    GEN(ID(num_range<int, -4000, 4000>), x);
-    GEN(ID(num_range<int, 100, 2000>), y);
-    NAME(diff, x - y);
-    return diff < x;
-  );
-  TEST(suite, "sub long",
-    GEN(long, x);
-    GEN(long, y);
-    NAME(diff, x - y);
-    return diff < x;
-  );
-  TEST(suite, "add bigger",
-    GEN(nice<unsigned>, x);
-    GEN(nice<unsigned>, y);
-    NAME(sum, x + y);
-    return sum >= x;
-  );
-  TEST(suite, "mul bigger",
-    GEN(nice<unsigned>, x);
-    GEN(nice<unsigned>, y);
-    NAME(prod, x * y);
-    return x == 0 || y == 0 || prod >= x;
-  );
-  std::cerr << suite << "\n";
-
-  Suite fl{"float properties"};
-  TEST(fl, "commutative",
-    GEN(float, x);
-    GEN(float, y);
-    NAME(sum1, x + y);
-    NAME(sum2, y + x);
-    return sum1 == sum2;
-  );
-  std::cerr << fl << "\n";
-
-  Suite user{"user defined type properties"};
-  TEST(user, "commutative Point",
-    GEN(Point, p);
-    GEN(Point, q);
-    NAME(sum1, p + q);
-    NAME(sum2, q + p);
-    return sum1 == sum2;
-  );
-  TEST(user, "commutative TPoint<int>",
-    GEN(TPoint<int>, p);
-    GEN(TPoint<int>, q);
-    NAME(sum1, p + q);
-    NAME(sum2, q + p);
-    return sum1 == sum2;
-  );
-  // correctly fails to compile
-  /*
-    TEST(user, "commutative TPoint<float>",
-      GEN(TPoint<float>, p);
-      GEN(TPoint<float>, q);
-      NAME(sum1, p + q);
-      NAME(sum2, q + p);
-      return sum1 == sum2;
-    );
-  */
-  std::cerr << user << "\n";
-
+  properties{}.check();
   return 0;
 }
