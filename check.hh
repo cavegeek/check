@@ -63,12 +63,16 @@ namespace check {
       static_assert(
         std::is_integral_v<T> || std::is_floating_point_v<T>,
         "BasicRandom only generates integral and floating point values");
-      T const max_val = static_cast<T>(std::exp2((std::numeric_limits<T>::digits / T{2})));
-      T const min_val = -std::min(max_val, -std::numeric_limits<T>::min());
-      if constexpr (std::is_integral_v<T>) {
-        return std::uniform_int_distribution{min_val, max_val}(engine);
-      } else if constexpr (std::is_floating_point_v<T>) {
-        return std::uniform_real_distribution{min_val, max_val}(engine);
+      if constexpr (std::is_same_v<T, bool>) {
+        return std::bernoulli_distribution{0.5}(engine);
+      } else {
+        T const max_val = static_cast<T>(std::exp2((std::numeric_limits<T>::digits / T{2})));
+        T const min_val = -std::min(max_val, -std::numeric_limits<T>::min());
+        if constexpr (std::is_integral_v<T>) {
+          return std::uniform_int_distribution{min_val, max_val}(engine);
+        } else if constexpr (std::is_floating_point_v<T>) {
+          return std::uniform_real_distribution{min_val, max_val}(engine);
+        }
       }
     }
   }
