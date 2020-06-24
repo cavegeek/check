@@ -18,6 +18,7 @@ namespace check {
       // only valid on integral and floating point types
       template<typename T> operator T();
 
+      std::size_t small_size(std::size_t max = 15);
     private:
       std::minstd_rand engine;
     };
@@ -65,6 +66,10 @@ namespace check {
           return std::uniform_real_distribution{min_val, max_val}(engine);
         }
       }
+    }
+
+    std::size_t BasicRandom::small_size(std::size_t const max) {
+      return std::uniform_int_distribution<std::size_t>{0, max}(engine);
     }
   }
 
