@@ -13,17 +13,13 @@ namespace check {
 
   namespace detail {
     struct BasicRandom {
-      enum Range { random, all };
-
       BasicRandom() : engine{std::random_device{}()} {}
 
       // only valid on integral and floating point types
       template<typename T> operator T();
 
-      template<typename T> T random_of(std::initializer_list<T> const & vals);
     private:
       std::minstd_rand engine;
-      Range range;
     };
   }
 
@@ -53,11 +49,6 @@ namespace check {
   }
 
   namespace detail {
-    template<typename T> T BasicRandom::random_of(std::initializer_list<T> const & vals) {
-      return *vals.begin()[
-        std::uniform_int_distribution<size_t>{size_t{0}, vals.size()}(engine)];
-    }
-
     template<typename T>
     BasicRandom::operator T() {
       static_assert(
