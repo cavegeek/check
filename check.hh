@@ -54,7 +54,7 @@ namespace check {
     BasicRandom::operator T() {
       static_assert(
         std::is_integral_v<T> || std::is_floating_point_v<T>,
-        "BasicRandom only generates integral and floating point values");
+        "please specialize template check::Random::operator T() for your type T");
       if constexpr (std::is_same_v<T, bool>) {
         return std::bernoulli_distribution{0.5}(engine);
       } else {
